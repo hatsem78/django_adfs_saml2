@@ -1,0 +1,1 @@
+# django_adfs_saml2
