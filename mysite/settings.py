@@ -175,7 +175,7 @@ SAML_CONFIG = {
   'xmlsec_binary': 'C:\\Users\\Administrator\\prueba\\Lib\\site-packages\\libxmlsec\\bin\\xmlsec.exe',
 
   # your entity id, usually your subdomain plus the url to the metadata view
-  'entityid': 'https://localhost:8000/saml2/metadata/',
+  'entityid': 'https://localhost:8005/saml2/metadata/',
 
   # directory with attribute mapping
   'attribute_map_dir': path.join(BASEDIR, 'attribute-maps'),
@@ -191,15 +191,15 @@ SAML_CONFIG = {
               # url and binding to the assetion consumer service view
               # do not change the binding or service name
               'assertion_consumer_service': [
-                  ('https://localhost:8000/saml2/acs/',
+                  ('https://localhost:8005/saml2/acs/',
                    saml2.BINDING_HTTP_POST),
                   ],
               # url and binding to the single logout service view
               # do not change the binding or service name
               'single_logout_service': [
-                  ('https://localhost:8000/saml2/ls/',
+                  ('https://localhost:8005/saml2/ls/',
                    saml2.BINDING_HTTP_REDIRECT),
-                  ('https://localhost:8000/saml2/ls/post',
+                  ('https://localhost:8005/saml2/ls/post',
                    saml2.BINDING_HTTP_POST),
                   ],
               },

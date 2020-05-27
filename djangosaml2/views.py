@@ -293,6 +293,13 @@ class AssertionConsumerServiceView(View):
         parser_xml.get_decode_xml()
         attribute_mapping = parser_xml.get_resul_property()
 
+
+        if 'success' not in attribute_mapping['status_code'].lower(): 
+           logger.warning('SAML2 ERROR LOGIN ' + attribute_mapping['status_code'][35:])
+           return render(request, 'djangosaml2/login_error.html', {
+                    'error_message': attribute_mapping['status_code'][35:],
+                }, status=200)
+
         client = Saml2Client(conf, identity_cache=IdentityCache(request.session))
 
         oq_cache = OutstandingQueriesCache(request.session)
