@@ -17,10 +17,11 @@ import base64
 from xml.etree import ElementTree
 from xml.etree.ElementTree import XMLParser
 import logging
-
+from django.shortcuts import redirect, render
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout, _get_backends
 from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.http import HttpResponseBadRequest  # 40x
 from django.http import HttpResponseRedirect  # 30x
@@ -78,7 +79,7 @@ def _get_subject_id(session):
         return None
 
 
-def login(request,
+def OAuth2LoginView(request,
           config_loader_path=None,
           wayf_template='djangosaml2/wayf.html',
           authorization_error_template='djangosaml2/auth_error.html',
@@ -357,6 +358,7 @@ class AssertionConsumerServiceView(View):
         """
         return None
 
+
 class MaxDepth:                     # The target object of the parser
     maxDepth = 0
     depth = 0
@@ -550,3 +552,51 @@ def get_namespace_prefixes():
             'md': md.NAMESPACE,
             'ds': xmldsig.NAMESPACE,
             'xenc': xmlenc.NAMESPACE}
+
+
+class OAuth2LoginNoSSOCustomView(View):
+    
+    def post(self, request):
+        """
+            Initiates the login flow and redirect the user
+
+            Args:
+                request (django.http.request.HttpRequest): A Django Request object
+        """
+        
+        if request.POST:
+            
+            username = request.POST['username']
+            password = request.POST['password']
+            
+            user = self.__verificate_user(request=request ,username=username, password=password)
+            
+            if user is not None:
+                logger.debug('login entra user %s ', user.is_active)
+                if user.is_active:
+                    login(request, user)
+                    return redirect('/')
+            else:
+                return redirect('/')
+            
+
+    def __verificate_user(self, request=None, **credentials):
+        """
+            If the given credentials are valid, return a User object.
+        """
+        logger.debug('login user %s ', credentials)
+        for backend, backend_path in _get_backends(return_tuples=True):
+
+            logger.debug('login backend %s ', backend)
+            
+            # Only backend verified CustomerBackend
+            if 'CustomerBackend' in backend_path:
+                user = backend.authenticate(**credentials)
+                if user is None:
+                    break
+                # Annotate the user object with the path of the backend.
+                user.backend = backend_path
+                logger.debug('login retorna %s ', user)
+                return user
+            else:
+                break

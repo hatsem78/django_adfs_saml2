@@ -82,10 +82,13 @@ class AdfsSaml2BaseBackend(ModelBackend):
             user (django.contrib.auth.models.User): User model instance
             claims (dict): claims from the access token
         """
+        
 
-
-        required_fields = [field.name for field in user._meta.fields if field.blank is False]
-
+        #required_fields = [field.name for field in user._meta.fields if field.blank is False]
+        required_fields = ['email', 'name', 'last_name']
+        logger.debug("claims '%s'.", claims)
+        logger.debug("user._meta.fields '%s'.", user._meta.fields)
+        logger.debug("mappings '%s'.", required_fields)
         for field, claim in settings.CLAIM_MAPPING.items():
             if hasattr(user, field):
                 if claim in claims:
@@ -102,6 +105,7 @@ class AdfsSaml2BaseBackend(ModelBackend):
             else:
                 msg = "User model has no field named '{}'. Check ADFS claims mapping."
                 raise ImproperlyConfigured(msg.format(field))
+
 
 class Saml2Backend(AdfsSaml2BaseBackend):
 

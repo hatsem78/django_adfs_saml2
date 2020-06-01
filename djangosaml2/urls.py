@@ -14,14 +14,17 @@
 # limitations under the License.
 app_name = "djangosaml2"
 from django.urls import path
+from django.conf.urls import url
 
 from . import views
 
 urlpatterns = [
-    path('login/', views.login, name='saml2_login'),
+    path('login/', views.OAuth2LoginView, name='saml2_login'),
     path('acs/', views.AssertionConsumerServiceView.as_view(), name='saml2_acs'),
     path('logout/', views.logout, name='saml2_logout'),
     path('ls/', views.logout_service, name='saml2_ls'),
     path('ls/post/', views.logout_service_post, name='saml2_ls_post'),
     path('metadata/', views.metadata, name='saml2_metadata'),
+    url(r'^login_no_sso_custom$', views.OAuth2LoginNoSSOCustomView.as_view(), name='login_no_sso_custom'),
+    #path('login_no_sso_custom/', views.OAuth2LoginNoSSOCustomView, name='login_no_sso_custom'),
 ]
